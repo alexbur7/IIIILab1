@@ -8,22 +8,16 @@ fun main(args: Array<String>) {
 }
 
 fun launchAIDrinkTask() {
-    //выберем список соседей
     val neighboursList = getNeighboursList()
 
     println("Введите количество рассматриваемых соседей: (до 5)")
     val neighboursCount = readln().toInt()
 
-    //Введем изначальные данные и составим из них модель
     val initialModel = insertInitialModel()
 
-    //Обработаем изначальные данные (подправим список соседей)
     val filteredNeighbours = getAndPrintNeighboursFilteredByInitialModel(neighboursList, initialModel, neighboursCount)
 
-    //Выведем и напиток
-    println(
-        getFavorableDrink(filteredNeighbours, initialModel)
-    )
+    println(getFavorableDrink(filteredNeighbours, initialModel))
 }
 
 private fun getNeighboursList(): List<Neighbour> = CsvParser().getNeighbours(File("answers.csv"))
@@ -120,11 +114,9 @@ private fun getAndPrintNeighboursFilteredByInitialModel(
 
 private fun getFavorableDrink(neighbours: List<Neighbour>, initialModel: Neighbour): DrinkType {
 
-    //Посчитаем любителей кофе и чая
     val teaCount = neighbours.count { it.drink == DrinkType.TEA }
     val coffeeCount = neighbours.count { it.drink == DrinkType.COFFEE }
 
-    //Сравним, если неясно любителей поровну - смотрим на другие параметры
     return when {
         teaCount > coffeeCount -> DrinkType.TEA
         teaCount < coffeeCount -> DrinkType.COFFEE
@@ -139,7 +131,6 @@ private fun getDrinkInTie(neighbours: List<Neighbour>, initialModel: Neighbour):
     val coffeeAbsoluteDistanceSum =
         getSum(neighbours.filter { it.drink == DrinkType.COFFEE }.map { it.getAbsoluteGraphDistance(initialModel) })
 
-    //Посортируем по убыванию по оставшимся критериям и достаем напиток
     return when (teaAbsoluteDistanceSum > coffeeAbsoluteDistanceSum) {
         true -> DrinkType.COFFEE
         false -> DrinkType.TEA
